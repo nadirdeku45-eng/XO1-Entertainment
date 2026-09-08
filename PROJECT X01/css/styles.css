@@ -1,0 +1,5 @@
+:root{--bg:#0f1724;--fg:#e6eef8;--accent:#ff6b6b}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;min-height:100vh}
+header{padding:2rem;text-align:center}
+main{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column}
+button{background:var(--accent);color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer}
