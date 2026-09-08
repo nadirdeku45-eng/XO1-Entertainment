@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category | X01 Entertainment</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+
+        ::view-transition-old(root) {
+            animation: page-out .22s ease both;
+        }
+
+        ::view-transition-new(root) {
+            animation: page-in .42s ease both;
+        }
+    </style>
+</head>
+<body class="category-page">
+    <header class="site-header">
+        <a class="brand" href="X01 Entertainment.html"><span>✦</span> X01 Entertainment</a>
+        <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <nav class="site-nav">
+            <a href="X01 Entertainment.html">Home</a>
+            <a data-category-link="movies" href="category.html?category=movies">Movies</a>
+            <a data-category-link="music" href="category.html?category=music">Music</a>
+            <a data-category-link="anime" href="category.html?category=anime">Anime</a>
+            <a data-category-link="football" href="category.html?category=football">Football</a>
+            <a data-category-link="news" href="category.html?category=news">News</a>
+            <a href="X01 Entertainment.html#contact">Contact</a>
+            <button id="logoutButton" class="nav-logout" type="button">Logout</button>
+        </nav>
+    </header>
+
+    <main class="category-page-main">
+        <section class="category-page-header">
+            <p class="eyebrow" id="categoryEyebrow">CATEGORY</p>
+            <h1 id="categoryTitle">Browse Entertainment</h1>
+            <p id="categoryDescription">Explore a continuously loading collection from X01 Entertainment.</p>
+
+            <div class="category-page-search">
+                <input id="categorySearch" type="search" placeholder="Search this category..." aria-label="Search this category">
+            </div>
+        </section>
+
+        <section class="category-results">
+            <div class="category-results-heading">
+                <h2 id="resultsTitle">Featured</h2>
+                <span id="categoryCount">0 loaded</span>
+            </div>
+            <div class="infinite-card-grid" id="infiniteGrid"></div>
+            <p class="load-status" id="loadStatus">Loading more...</p>
+            <p class="no-results" id="categoryNoResults" hidden>No results found.</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <p class="footer-brand">X01 Entertainment</p>
+            <p>© 2026 X01 Entertainment</p>
+        </div>
+        <div class="footer-links">
+            <a href="X01 Entertainment.html">Home</a>
+            <a href="X01 Entertainment.html#about">About</a>
+            <a href="X01 Entertainment.html#contact">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        const categoryData = {
+            movies: {
+                label: "MOVIE CATEGORY",
+                title: "Browse Movies",
+                description: "Search movies and keep scrolling to discover more titles.",
+                icon: "🎬",
+                items: [
+                    ["Dune: Part Two", "Epic science-fiction adventure"],
+                    ["Inside Out 2", "Animated family story"],
+                    ["Deadpool & Wolverine", "Action comedy blockbuster"],
+                    ["The Batman", "Dark crime thriller"],
+                    ["Spider-Man: Across the Spider-Verse", "Animated superhero adventure"],
+                    ["Oppenheimer", "Historical drama"],
+                    ["Avatar: The Way of Water", "Fantasy sci-fi epic"],
+                    ["Barbie", "Comedy and fantasy"]
+                ]
+            },
+            music: {
+                label: "MUSIC CATEGORY",
+                title: "Browse Music",
+                description: "Search artists, songs, albums, and the sounds shaping the moment.",
+                icon: "🎵",
+                items: [
+                    ["Billboard Hot 100", "Popular songs leading the charts"],
+                    ["Global Top Songs", "Music trending around the world"],
+                    ["New Music Releases", "Fresh albums, singles, and artists"],
+                    ["Hip Hop", "New sounds and essential hip-hop picks"],
+                    ["Afrobeats", "Energetic rhythms from across Africa"],
+                    ["Pop Music", "Catchy songs and pop culture favourites"],
+                    ["R&B Essentials", "Smooth voices and unforgettable grooves"],
+                    ["Rock Classics", "Guitars, anthems, and legendary bands"]
+                ]
+            },
+            anime: {
+                label: "ANIME CATEGORY",
+                title: "Browse Anime",
+                description: "Search series, characters, and fan favourites from anime culture.",
+                icon: "⛩️",
+                items: [
+                    ["One Piece", "A legendary pirate adventure"],
+                    ["Naruto", "A ninja story about friendship and purpose"],
+                    ["Demon Slayer", "Stylish action and supernatural drama"],
+                    ["My Hero Academia", "Heroes, powers, and determined students"],
+                    ["Jujutsu Kaisen", "Dark fantasy and supernatural battles"],
+                    ["Dragon Ball", "Classic martial arts and epic battles"],
+                    ["Attack on Titan", "Intense mystery and survival"],
+                    ["Solo Leveling", "A powerful rise through a dangerous world"]
+                ]
+            },
+            football: {
+                label: "FOOTBALL CATEGORY",
+                title: "Browse Football",
+                description: "Search leagues, matches, transfers, and football stories.",
+                icon: "⚽",
+                items: [
+                    ["Premier League", "Follow one of football's biggest leagues"],
+                    ["Champions League", "Europe's biggest club competition"],
+                    ["Transfer News", "Track the latest player moves"],
+                    ["Match Results", "Scores, fixtures, and match updates"],
+                    ["World Cup", "International football stories"],
+                    ["Football Stars", "Stories about the game's biggest names"],
+                    ["La Liga", "Spanish football and club rivalries"],
+                    ["Serie A", "Italian football and tactical battles"]
+                ]
+            },
+            news: {
+                label: "NEWS CATEGORY",
+                title: "Browse News",
+                description: "Search entertainment headlines, streaming updates, and pop culture stories.",
+                icon: "📰",
+                items: [
+                    ["Entertainment Headlines", "The latest stories from entertainment"],
+                    ["Streaming Updates", "New shows, films, and platform news"],
+                    ["Celebrity News", "Updates about stars and public figures"],
+                    ["Award Shows", "Red carpets, winners, and memorable moments"],
+                    ["Pop Culture", "Trends shaping the cultural conversation"],
+                    ["Trailers & Announcements", "Upcoming releases and first looks"],
+                    ["TV News", "Series renewals, casts, and television stories"],
+                    ["Music News", "Artist updates and industry headlines"]
+                ]
+            }
+        };
+
+        const selectedCategory = new URLSearchParams(window.location.search).get("category") || "movies";
+        const category = categoryData[selectedCategory] || categoryData.movies;
+        const categoryEyebrow = document.getElementById("categoryEyebrow");
+        const categoryTitle = document.getElementById("categoryTitle");
+        const categoryDescription = document.getElementById("categoryDescription");
+        const resultsTitle = document.getElementById("resultsTitle");
+        const categorySearch = document.getElementById("categorySearch");
+        const infiniteGrid = document.getElementById("infiniteGrid");
+        const categoryCount = document.getElementById("categoryCount");
+        const loadStatus = document.getElementById("loadStatus");
+        const categoryNoResults = document.getElementById("categoryNoResults");
+        let loadedItems = 0;
+        let loading = false;
+        let searchQuery = "";
+
+        document.querySelectorAll("[data-category-link]").forEach((link) => {
+            link.addEventListener("click", () => {
+                document.body.classList.add("page-leaving");
+            });
+        });
+
+        categoryEyebrow.textContent = category.label;
+        categoryTitle.textContent = category.title;
+        categoryDescription.textContent = category.description;
+        resultsTitle.textContent = category.title;
+        document.title = `${category.title} | X01 Entertainment`;
+        document.querySelector(`[data-category-link="${selectedCategory}"]`)?.classList.add("active-category");
+
+        function matchingItems() {
+            return category.items.filter(([name, description]) =>
+                `${name} ${description}`.toLowerCase().includes(searchQuery)
+            );
+        }
+
+        function createCard([name, description], index) {
+            const card = document.createElement("article");
+            card.className = "infinite-card";
+            card.innerHTML = `
+                <div class="infinite-card-icon">${category.icon}</div>
+                <h3>${name}${index >= category.items.length ? ` - Collection ${Math.floor(index / category.items.length) + 1}` : ""}</h3>
+                <p>${description}</p>
+            `;
+            return card;
+        }
+
+        function loadMore() {
+            if (loading || searchQuery) return;
+            loading = true;
+            loadStatus.textContent = "Loading more...";
+
+            const batchSize = 8;
+            for (let i = 0; i < batchSize; i++) {
+                const itemIndex = loadedItems + i;
+                const item = category.items[itemIndex % category.items.length];
+                infiniteGrid.appendChild(createCard(item, itemIndex));
+            }
+
+            loadedItems += batchSize;
+            categoryCount.textContent = `${loadedItems} loaded`;
+            loadStatus.textContent = "Keep scrolling for more";
+            loading = false;
+        }
+
+        function filterCards() {
+            searchQuery = categorySearch.value.trim().toLowerCase();
+            infiniteGrid.innerHTML = "";
+
+            if (!searchQuery) {
+                loadedItems = 0;
+                categoryNoResults.hidden = true;
+                loadMore();
+                return;
+            }
+
+            const matches = matchingItems();
+            matches.forEach((item, index) => infiniteGrid.appendChild(createCard(item, index)));
+            categoryCount.textContent = `${matches.length} result${matches.length === 1 ? "" : "s"}`;
+            categoryNoResults.hidden = matches.length !== 0;
+            loadStatus.textContent = "Search results loaded";
+        }
+
+        categorySearch.addEventListener("input", filterCards);
+        window.addEventListener("scroll", () => {
+            const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500;
+            if (nearBottom) loadMore();
+        });
+
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const header = document.querySelector(".site-header");
+        const logoutButton = document.getElementById("logoutButton");
+        menuToggle.addEventListener("click", () => {
+            const isOpen = header.classList.toggle("menu-open");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+        });
+
+        logoutButton.addEventListener("click", () => {
+            fetch("/api/auth/logout", { method: "POST" }).finally(() => {
+                window.location.href = "index.html";
+            });
+        });
+
+        loadMore();
+    </script>
+</body>
+</html>
